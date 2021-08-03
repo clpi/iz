@@ -12,12 +12,12 @@ pub fn build(b: *std.build.Builder) void {
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const mode = b.standardReleaseOptions();
 
-    const exe = b.addExecutable("izle", "src/main.zig");
+    const exe = b.addExecutable("iz", "src/main.zig");
     exe.setTarget(target);
     exe.setBuildMode(mode);
     exe.install();
 
-    const wasm = b.addExecutable("izle", "src/main.zig");
+    const wasm = b.addExecutable("iz", "src/main.zig");
     wasm.setTarget(std.zig.CrossTarget{ 
         .cpu_arch=.wasm32, .os_tag = .wasi });
     wasm.setBuildMode(mode);

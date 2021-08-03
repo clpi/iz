@@ -17,3 +17,7 @@ pub fn main() anyerror!void {
     var ch = chain.Chain(usize).init(std.testing.allocator);
     try ch.push(3);
 }
+
+test "main" {
+    try main();
+}

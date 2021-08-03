@@ -1,5 +1,6 @@
 // based on btree by github.com/rvcas/zata
 const std = @import("std");
+const testing = std.testing;
 
 pub fn BTree(comptime T: type) type {
     return struct {
@@ -28,19 +29,20 @@ pub fn BTree(comptime T: type) type {
 
         pub const SearchResult = union(enum) {
             found: Found,
-            not_found
-        };
+            not_found,
 
-        pub fn found(node: Node) SearchResult {
-            return SearchResult {
-                .found { Found { .ix = node.ix, .data = node.data } }
+            pub const Found = struct {
+                ix: usize,
+                data: T
             };
-        }
 
-        pub const Found = struct {
-            ix: usize,
-            data: T
+            pub fn found(node: Node) SearchResult {
+                return SearchResult {
+                    .found { Found { .ix = node.ix, .data = node.data } }
+                };
+            }
         };
+
 
         pub fn init(allocator: *std.mem.Allocator) BTree(T) {
             return BTree(T) {
@@ -113,4 +115,8 @@ pub fn BTree(comptime T: type) type {
             }
         }
     };
+}
+
+test "BTree.init" {
+    var btree = BTree(usize).init(std.testing.allocator);
 }

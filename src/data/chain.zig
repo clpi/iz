@@ -100,5 +100,11 @@ pub fn Chain(comptime T: type) type {
 }
 
 test "Chain.init" {
-    
+    var chain = Chain(usize).init(std.testing.allocator);    
+}
+
+test "Chain.push" {
+    var chain = Chain(usize).init(std.testing.allocator);
+    try chain.push(3);
+    try std.testing.expect(chain.len == 1);
 }
