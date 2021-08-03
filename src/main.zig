@@ -1,7 +1,9 @@
 const std = @import("std");
+const chain = @import("data/chain.zig");
+const tree = @import("data/tree.zig");
 const test_alloc = std.testing.allocator;
-const types = @import("./types.zig");
-const cmd = @import("./cmd.zig");
+const types = @import("types.zig");
+const cmd = @import("cmd.zig");
 
 const alloc = std.testing.allocator_instance;
 const proc = std.process;
@@ -12,5 +14,6 @@ pub fn main() anyerror!void {
     var gp_alloc = std.heap.GeneralPurposeAllocator(.{}){};
     const gpa= &gp_alloc.allocator;
     const sub_cmd = try cmd.match_cmd(gpa);
-
+    var ch = chain.Chain(usize).init(std.testing.allocator);
+    try ch.push(3);
 }
