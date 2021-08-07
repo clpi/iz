@@ -1,4 +1,6 @@
 const std = @import("std");
+const eql = std.mem.eql;
+// const eql = std.meta.eql;
 const help = @import("cmd/help.zig");
 const proc = std.process;
 const fs = std.fs;
@@ -13,7 +15,15 @@ pub const Ops = enum {
 
 
 pub const Cmd = enum {
-    new
+    add, help, version,
+
+    pub fn exec(cmd: Cmd) void {
+        switch (cmd) {
+            Cmd.help => std.debug.print("\nGOT HELP CMD", .{}),
+            Cmd.add => std.debug.print("\nGOT ADD CMD", .{}),
+            Cmd.version => std.debug.print("GOT VERSION CMD", .{})
+        }
+    }
 };
 
 pub fn match_cmd(gpa: *std.mem.Allocator) !Cmd {
@@ -25,9 +35,16 @@ pub fn match_cmd(gpa: *std.mem.Allocator) !Cmd {
     for (args) |arg, i| {
         if (i == 0) { continue; }
         std.debug.print("{}: {s}\n", .{i, arg});
+        // if (eql([]const u8, arg, "h") or eql([]const u8, arg, "help"))  
+        //     return Cmd.help
+        // else if (eql([]const u8, arg, "v") or eql([]const u8, arg, "version")) 
+        //     return Cmd.version
+        // else if (eql([]const u8, arg, "a") or eql([]const u8, arg, "add")) 
+        //     return Cmd.add
+        // else
+        //     return Cmd.help;
     }
-    return Cmd.new;
-
+    return Cmd.help;
 }
 
 fn arena_alloc() !void {
