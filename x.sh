@@ -47,25 +47,41 @@ function publish() {
     wapm publish
 }
 
-((!$#)) && run
 
 case $1 in
-    r|run) case $2 in
-	w|wasm) run_wasm;;
-	*) run;;
+    r|run) 
+	case $2 in
+	    w|wasm) run_wasm;;
+	    *) run;;
+	esac
 	;;
-    r|test) case $2 in
-	*) test;;
+    r|test) 
+	case $2 in
+	    *) test;;
+	esac
+	;;
+    rc|runc) 
+	case $2 in
+	    h|help)    zig build run -- help ;;
+	    n|new)     zig build run -- new ;;
+	    l|log)     zig build run -- log ;;
+	    ls|list)   zig build run -- ls ;;
+	    rm|remove) zig build run -- rm ;;
+	    R|repl)    zig build run -- repl ;;
+	    i|init)    zig build run -- init ;;
+	esac
 	;;
     c|clean) clean;;
     cc|ccache) rm -rf zig-cache;;
     gp|push) gpush;;
     p|publish) wapm_publish;;
     w|wasm) run_wasm;;
-    b|build) case $2 in
-	f|fast) build_fast;;
-	sm|small) build_small;;
-	sa|safe) build_safe;;
+    b|build) 
+	case $2 in
+	    f|fast) build_fast;;
+	    sm|small) build_small;;
+	    sa|safe) build_safe;;
+	esac
 	;;
     h|help) print_help;;
     i|install) zig build -Drelease-fast true install;;
@@ -73,4 +89,9 @@ case $1 in
 
 esac    
 
-return 0
+main() {
+    run
+    return 0
+}
+
+((!$#)) && main

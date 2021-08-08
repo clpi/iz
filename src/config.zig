@@ -1,4 +1,5 @@
 const std = @import("std");
+const fs = std.fs;
 const types = @import("./types.zig");
 
 pub const Config = struct {
@@ -12,5 +13,9 @@ pub const Config = struct {
             .debug = false,
             .api_key = ""
         };
+    }
+
+    pub fn defaultPath() []const u8 {
+        return std.process.getCwd();
     }
 };
