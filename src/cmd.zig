@@ -10,18 +10,33 @@ const wasm = std.wasm;
 var a: *std.mem.Allocator = undefined;
 
 pub const Ops = enum {
-    get, add, log
+    get, add, log, new
 };
 
 
 pub const Cmd = enum {
-    add, help, version,
+    add, help, version, new, log,
 
     pub fn exec(cmd: Cmd) void {
         switch (cmd) {
-            Cmd.help => std.debug.print("\nGOT HELP CMD", .{}),
-            Cmd.add => std.debug.print("\nGOT ADD CMD", .{}),
-            Cmd.version => std.debug.print("GOT VERSION CMD", .{})
+            Cmd.help => {
+                std.debug.print("\nGOT HELP CMD\n", .{});
+                help.print_help();
+            },
+            Cmd.add => {
+                std.debug.print("\nGOT ADD CMD", .{});
+            },
+            Cmd.version => {
+                std.debug.print("GOT VERSION CMD\n", .{});
+                help.print_info();
+            },
+            Cmd.new => {
+                std.debug.print("\nGOT CMD NEW", .{});
+            },
+            Cmd.log => {
+                std.debug.print("\nGOT CMD Log", .{});
+            },
+
         }
     }
 };
@@ -30,11 +45,16 @@ pub fn match_cmd(gpa: *std.mem.Allocator) !Cmd {
     const args = try proc.argsAlloc(gpa);
     defer proc.argsFree(gpa, args);
     if (args.len == 1) { 
-        help.print_help();
     }
     for (args) |arg, i| {
         if (i == 0) { continue; }
         std.debug.print("{}: {s}\n", .{i, arg});
+        if (eql(u8, arg, "help") or eql(u8, arg, "h")) return Cmd.help
+        else if (eql(u8, arg, "new") or eql(u8, arg, "n")) return Cmd.new
+        else if (eql(u8, arg, "add") or eql(u8, arg, "a")) return Cmd.add
+        else if (eql(u8, arg, "log") or eql(u8, arg, "l")) return Cmd.log
+        else if (eql(u8, arg, "version") or eql(u8, arg, "v")) return Cmd.version
+        else continue;
         // if (eql([]const u8, arg, "h") or eql([]const u8, arg, "help"))  
         //     return Cmd.help
         // else if (eql([]const u8, arg, "v") or eql([]const u8, arg, "version")) 
