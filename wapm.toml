@@ -1,13 +1,14 @@
 [package]
-name = "iz"
-version = "0.1.0-alpha.1"
+name = "clpi/iz"
+version = "0.1.0-unstable.1"
 description = "a cli utility in zig"
 license = "MIT"
+readme = "README.md"
 repository = "https://github.com/clpi/iz"
 
 [[module]]
 name = "iz"
-source = "zig-out/bin/iz.wasm"
+source = "iz.wasm"
 abi = "wasi"
 
 [module.interfaces]

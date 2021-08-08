@@ -1,4 +1,5 @@
 const std = @import("std");
+const wasm = std.wasm;
 const chain = @import("data/chain.zig");
 const tree = @import("data/tree.zig");
 const test_alloc = std.testing.allocator;
