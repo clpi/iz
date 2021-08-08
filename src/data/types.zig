@@ -2,9 +2,9 @@ const std = @import("std");
 const fs = std.fs;
 
 pub const User = struct {
-    name: []u8,
-    email: []u8,
-    display: []u8,
+    name: []const u8,
+    email: []const u8,
+    display: []const u8,
 
     pub fn toString(self: User) ![]const u8 {
         var buf: [100]u8 = undefined;

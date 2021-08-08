@@ -1,6 +1,7 @@
 const std = @import("std");
 const fs = std.fs;
-const types = @import("./types.zig");
+const types = @import("./data/types.zig");
+const User = types.User;
 
 pub const Config = struct {
     user: User,

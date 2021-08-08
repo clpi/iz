@@ -10,34 +10,27 @@ const print = std.debug.print;
 const printBold = ansi.printBold;
 const printFg = ansi.Color.printFg;
 const cmd = @import("../cmd.zig");
+const Cmd = cmd.Cmd;
+const CmdInfo = cmd.CmdInfo;
+const OptInfo = cmd.OptInfo;
 
-pub fn print_help(help_cmd: ?cmd.Cmd) void {
+pub fn print_help(help_cmd: ?Cmd) void {
     if (help_cmd) |command| {
-        switch (command) {
-            .help => {
-                print_welcome();
-                print_info();
-                print_usage();
-                print_commands();
-                print_opts();
-                print_news();
-            },
-            else => {
-                print("No help implemented for that command yet", .{});
-            }
-
-        }
-    } // else must be base help, i.e. iz help
-    print_welcome(); 
-    print_info();
-    print_usage();
-    print_commands();
-    print_opts();
-    print_news();
+        print_usage(command);
+        print_commands(command);
+        print_opts(command);
+    } else {
+        print_welcome(); 
+        print_info();
+        print_usage(null);
+        print_commands(null);
+        print_opts(null);
+        print_news();
+    }
 }
 
 pub fn print_welcome() void {
-    print_heading(.green, "INFO");
+    print_heading(.green, null, "INFO");
     printFg(.green, "  The ");
     printFg(.magenta, comptime ansi.Color.bold("iz"));
     printFg(.green, " cli ");
@@ -61,8 +54,47 @@ pub fn print_info() void {
     });
 }
 
-pub fn print_usage() void {
-    print_heading(.magenta, "USAGE");
+pub fn print_usage(help_cmd: ?Cmd) void {
+    if (help_cmd) |command| {
+        print_heading(.magenta, command.info().long, "USAGE");
+        switch (command) {
+            Cmd.new => {
+                print_ex("new","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.log => {
+                print_ex("log","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.run => {
+                print_ex("run","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.init => {
+                print_ex("init","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.help => {
+                print_ex("help","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.find => {
+                print_ex("find","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.list => {
+                print_ex("list","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.shell => {
+                print_ex("shell","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.add => {
+                print_ex("add","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.remove => {
+                print_ex("remove","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+        }
+    } else {
+        print_base_usage();
+    }
+}
+pub fn print_base_usage() void {
+    print_heading(.magenta, null, "USAGE");
     print_ex("<CMD>","<TARGET>", "<VALUE>", "<OPTS>");
     print("\n\tFor example:\n", .{});
     print_ex("log  ", "bg      ", "126    ", "--debug");
@@ -91,8 +123,31 @@ pub fn print_ex(
     std.debug.print("    {s}  {s} {s} {s} {s}\n", .{iz, scmd, stgt, sval, sopts});
 }
 
-pub fn print_commands() void {
-    print_heading(.green, "COMMANDS");
+pub fn print_commands(help_cmd: ?Cmd) void {
+    if (help_cmd) |command| {
+        print_heading(.green, command.info().long, "COMMANDS");
+        switch (command) {
+            Cmd.help => print_base_commands(),
+            Cmd.new => {
+                print_command("l", "log", "Create a new log chain");
+                print_command("r", "rel", "Create a new relation between two items in the log net");
+                print_command("w", "workspace", "jreate a new empty workspace");
+                print_command("f", "field", "Create a new field for an item");
+                print_command("e", "entry", "Create a new entry in the log chain ");
+                print_command("n", "node", "Create a new node in the log net ");
+                print_command("a", "auto", "Create a new data automation");
+            },
+            Cmd.shell => print("No shell help yet", .{}),
+            Cmd.log => print("No log help yet", .{}),
+            Cmd.find => print("No find help yet", .{}),
+            else => print("No help yet for that command", .{})
+        }
+    } else print_base_commands();
+}
+
+pub fn print_base_commands() void {
+    var init_cmd = CmdInfo.create("i", "init", "initialize a new workspace", &[_]OptInfo {});
+    print_heading(.green, null, "COMMANDS");
     print_command("i", "init", "Initialize a new workspace");
     print_command("r", "run", "Run a saved automation");
     print_command("ls","list","List and search for resources");
@@ -102,17 +157,23 @@ pub fn print_commands() void {
     print_command("sh","shell","Enter the iz shell for current workspace");
     print_command("n","new","Create a new workspace/environment");
     print_command("h","help","Print help for the CLI or for a command");
-
 }
-pub fn print_heading(comptime color: ?Color, comptime head_str: []const u8) void {
-    if (color) |col|  print("\n{s}\n", .{
-            comptime Color.bold(Color.fg(col, head_str))})
-     else 
-        print("\n{s}\n", .{
-            comptime Color.bold(comptime head_str)});
+pub fn print_heading(comptime color: ?Color, cmd_str: ?[]const u8, comptime head_str: []const u8) void {
+    var cmds: []const u8 = cmd_str orelse "";
+    print("\n", .{});
+    if (color) |col|  {
+        if (cmd_str) |cmdstr|
+            print("{s} - ({s})\n", .{comptime Color.bold(Color.fg(col, head_str)), cmds})
+        else
+            print("{s}\n", .{comptime Color.bold(Color.fg(col, head_str))});
+    } else  {
+        if (cmd_str)  |cmdstr|
+            print("{s} - ({s})\n", .{comptime Color.bold(comptime head_str), cmds})
+        else
+            print("{s}\n", .{comptime Color.bold(comptime head_str)});
+    }
     
 }
-
 pub fn print_command(comptime short: []const u8, comptime long: []const u8, desc: []const u8) void {
     const sshort = comptime Color.bold(Color.green.fg(short));
     const slong = comptime Color.green.fg(long);
@@ -129,15 +190,28 @@ pub fn print_opt(comptime short: []const u8, comptime long: []const u8, desc: []
     else if (short.len == 2) print("    {s} or --{s}  \t      {s}\n", .{sshort, slong, desc})
     else print("    {s}  --{s}\t{s}\n", .{sshort, slong, desc});
 }
-pub fn print_opts() void {
-    print_heading(.blue, "OPTS");
+pub fn print_opts(help_cmd: ?Cmd) void {
+    if (help_cmd) |command| {
+        print_heading(.blue, command.info().long, "OPTS");
+        switch (command) {
+            Cmd.help => {},
+            Cmd.new => {
+            },
+            else => {}
+        }
+    } else {
+        print_base_opts();
+    }
+}
+pub fn print_base_opts() void {
+    print_heading(.blue, null, "OPTS");
     print_opt("d", "debug", "Print extra debug verbose msgs");
     print_opt("h", "help", "Print help for the current command");
     print_opt("v", "version", "Print the IZLE cli utility version info");
 }
 
 pub fn print_news() void {
-    print_heading(.yellow, "NEWS");
+    print_heading(.yellow,null,  "NEWS");
     print("    - {s}: {s}\n", .{comptime Color.yellow.fg("08/07/2021"), "Help message styling finished"});
     print("    - {s}: {s}\n", .{comptime Color.yellow.fg("08/07/2021"), "New CLI parsing and styling features addded"});
     print("\n", .{});

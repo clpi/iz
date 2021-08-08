@@ -1,15 +1,10 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
-const ArrayListUnmanaged = std.ArrayListUnmanaged;
 const EdgeIx = usize;
 const NodeIx = usize;
 
-pub const GraphDirKind = enum {
+pub const GraphKind = enum {
     directed, undirected
-};
-
-pub const GraphEdgeKind = enum {
-    weighted, unweighted 
 };
 
 pub fn Graph(comptime N: type, comptime E: type) type {
@@ -18,8 +13,9 @@ pub fn Graph(comptime N: type, comptime E: type) type {
         const Self = @This();
 
         allocator: *std.mem.Allocator,
-        edges: ArrayList(E),
-        nodes: ArrayList(N),
+        edges: ArrayList(E) = ArrayList(E) { },
+        nodes: ArrayList(N) = ArrayList(T) { },
+        directed: GraphKind,
 
         const Node = struct {
             const Self = @This();
@@ -99,29 +95,31 @@ pub fn Graph(comptime N: type, comptime E: type) type {
             }
         };
 
-        pub fn init(allocator: *std.mem.Allocator) Graph(N, E) {
+        pub fn init(directed: GraphKind, allocator: *std.mem.Allocator) Graph(N, E) {
             return Graph(N, E) {
                 .allocator = allocator,
+                .directed = directed,
                 .edges = ArrayList(E).init(allocator),
                 .nodes = ArrayList(N).init(allocator),
             };
         }
 
-        pub fn initCapacity(allocator: *std.mem.Allocator, n: usize, e: usize) !Graph(N, E) {
+        pub fn initCapacity(directed: GraphKind, allocator: *std.mem.Allocator, n: usize, e: usize) !Graph(N, E) {
             var nodes = try ArrayList(N).initCapacity(allocator, n);
-            errdefer(nodes.deinit(allocator));
+            errdefer(nodes.deinit());
             var edges = try ArrayList(E).initCapacity(allocator, e);
-            errdefer(edges.deinit(allocator));
+            errdefer(edges.deinit());
             return Graph(N, E) {
                 .allocator = allocator,
+                .directed = directed,
                 .edges = edges,
                 .nodes = nodes,
             };
         }
 
         pub fn deinit(self: *Graph(N, E), allocator: *std.mem.Allocator) void {
-            self.edges.deinit(allocator);
-            self.nodes.deinit(allocator);
+            self.edges.deinit();
+            self.nodes.deinit();
         }
 
         pub fn node(graph: *Graph(N, E), node: NodeIx) ?Node {
@@ -152,6 +150,7 @@ const testing = std.testing;
 const expect = std.testing.expect;
 const assert = std.debug.assert;
 
-test "init_node" {
-    const graph = Graph([]const u8, usize).init(testing.allocator);
+test "Graph init" {
+    const graph = Graph([]const u8, usize).init(.directed, testing.allocator);
 }
+

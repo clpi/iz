@@ -17,7 +17,7 @@ pub fn main() anyerror!void {
     var gp_alloc = std.heap.GeneralPurposeAllocator(.{}){};
     const gpa= &gp_alloc.allocator;
     const sub_cmd = try cmd.match_cmd(gpa);
-    var config = config.Config.init();
+    var conf = config.Config.init();
     sub_cmd.exec();
     var ch = chain.Chain(usize).init(std.testing.allocator);
     try ch.push(3);
