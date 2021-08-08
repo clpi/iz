@@ -70,7 +70,7 @@ pub fn BTree(comptime T: type) type {
             self.items.len = self.capacity;
         }
 
-        pub fn insert(BTree: *BTree(T), data: T) !void {
+        pub fn insert(self: *BTree(T), data: T) !void {
             var iter: usize = 1;
             while (true) {
                 try self.validateCapacity(iter);
@@ -117,6 +117,13 @@ pub fn BTree(comptime T: type) type {
     };
 }
 
-test "BTree.init" {
+test "btree_init" {
     var btree = BTree(usize).init(std.testing.allocator);
+}
+
+test "btree_insert" {
+    var btree = BTree(usize).init(std.testing.allocator);
+    try btree.insert(3);
+    try btree.insert(6);
+    try std.testing.expect(btree.count == 2);
 }
