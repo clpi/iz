@@ -2,9 +2,12 @@ const std = @import("std");
 const fs = std.fs;
 
 pub const User = struct {
+    id: u128,
     name: []const u8,
     email: []const u8,
     display: []const u8,
+    created_ts: u64 = 0,
+    updated_ts: u64 = 0,
 
     pub fn toString(self: User) ![]const u8 {
         var buf: [100]u8 = undefined;
@@ -19,12 +22,24 @@ pub const User = struct {
     }
 
     pub fn new() !User {
-        return types.User {
+        return User {
+            .id = std.crypto.random.int(u128),
             .name = "Chris",
             .email = "chris@devisa.io",
             .display = "clp"
         };
     }
+
+    pub fn toJson(self: User, opts: std.json.StringifyOptions, writer: anytype) !void {
+        try writer.writeAll("{");
+        try std.fmt.format(writer, "\"id\":{},", .{ self.id });
+        try std.fmt.format(writer, "\"created_ts\":{},", .{ self.created_ts });
+        try writer.writeAll("}");
+    }
+};
+
+pub const Account = struct {
+    name: []const u8,
 };
 
 fn log_file() !void {

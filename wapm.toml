@@ -1,6 +1,6 @@
 [package]
 name = "clpi/iz"
-version = "0.1.0-unstable.2"
+version = "0.1.0-unstable.3"
 description = "a cli utility someday, for now mostly just exploring zig + wasm"
 license = "MIT"
 readme = "README.md"

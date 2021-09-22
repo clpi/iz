@@ -1,5 +1,37 @@
 const std = @import("std");
 
+pub fn AutoChainMap(
+    comptime K: type, 
+    comptime V: type, 
+    comptime max_load_pct: comptime_int) 
+    type 
+{
+    return HashMap(K, V, max_load_pct, std.hash_map.AutoContext(K));
+}
+
+pub fn ChainMap(
+    comptime K: type, 
+    comptime V: type, 
+    comptime max_load_pct: comptime_int, 
+    comptime Context: type
+) type {
+    return struct {
+
+        links: [*]?*Link,
+        nodes: [*]?*Link,
+        len: usize = 0,
+        shift: u6,
+
+        pub const Link = struct {
+            key: K = undefined,
+            val: V = undefined,
+            prev: ?*Link = null,
+            next: ?*Link = null,
+        };
+        const Self = @This();
+    };
+}
+
 pub fn Chain(comptime T: type) type {
     return struct {
         head: ?*Link, 

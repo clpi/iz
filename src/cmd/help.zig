@@ -38,7 +38,7 @@ pub fn print_welcome() void {
 }
 
 pub fn print_info() void {
-    print("  - {s}: {s}-{s}\n", .{comptime Color.green.fg("version"), "0.1.0", "unstable.1"});
+    print("  - {s}: {s}-{s}\n", .{comptime Color.green.fg("version"), "0.1.0", "unstable.3"});
     print("  - {s}:  {s} <{s}>\n", .{comptime Color.green.fg("author"), "Chris P", comptime Color.yellow.fg("clp@clp.is")});
     print("  - {s}:   {s}\n", .{
         comptime Color.green.fg("about"), 
@@ -79,6 +79,9 @@ pub fn print_usage(help_cmd: ?Cmd) void {
             Cmd.list => {
                 print_ex("list","<TARGET>", "<VALUE>", "<OPTS>");
             },
+            Cmd.inbox => {
+                print_ex("inbox","<TARGET>", "<VALUE>", "<OPTS>");
+            },
             Cmd.shell => {
                 print_ex("shell","<TARGET>", "<VALUE>", "<OPTS>");
             },
@@ -87,6 +90,9 @@ pub fn print_usage(help_cmd: ?Cmd) void {
             },
             Cmd.remove => {
                 print_ex("remove","<TARGET>", "<VALUE>", "<OPTS>");
+            },
+            Cmd.sim => {
+                print_ex("sim","<TARGET>", "<VALUE>", "<OPTS>");
             },
         }
     } else {
@@ -149,6 +155,8 @@ pub fn print_base_commands() void {
     var init_cmd = CmdInfo.create("i", "init", "initialize a new workspace", &[_]OptInfo {});
     print_heading(.green, null, "COMMANDS");
     print_command("i", "init", "Initialize a new workspace");
+    print_command("in", "inbox", "Check inbox messages");
+    print_command("s", "sim", "Simulate agent interactions");
     print_command("r", "run", "Run a saved automation");
     print_command("ls","list","List and search for resources");
     print_command("rm","remove","Remove a resource in current workspace");
